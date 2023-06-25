@@ -1,7 +1,7 @@
 import { PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useRef, useState, useLayoutEffect} from 'react'
 import Slide from './Slide.jsx'
-const Headers = ({titles, checkbox, checked, toggleAll}) => {
+const Headers = ({titles, checkbox, checked, toggleAll, action}) => {
 	const cols=titles.map( (title,index) =>
 		<th key={index} scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
 			{title}
@@ -20,7 +20,7 @@ const Headers = ({titles, checkbox, checked, toggleAll}) => {
 	)
 	cols.push(
 		<th key="last" scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-3">
-			<span className="sr-only">Edit</span>
+			<span  className="sr-only">Editar</span>
 		</th>
 	)
   return(
@@ -31,7 +31,7 @@ const Headers = ({titles, checkbox, checked, toggleAll}) => {
     </thead>
   )
 }
-const Items = ({items, id, selectedItems, setSelectedItems,edit}) => {
+const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) => {
     const rows = items.map(
       (item, index) =>{ //item is one item that correspond to one row of the table
         const row = Object.entries(item).map(
@@ -71,8 +71,13 @@ const Items = ({items, id, selectedItems, setSelectedItems,edit}) => {
         )
         row.push(
           <td key="last" className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-            <button onClick={()=>edit(item)} className="link text-indigo-600 hover:text-indigo-900">
-              Editar<span className="sr-only">, {item[Object.keys(item)[0]]}</span>
+            <button onClick={()=>{
+              action.current='Editar'
+              old.current=item
+              setOpen(true)
+              
+            }} 
+            className="link text-indigo-600 hover:text-indigo-900"> Editar<span className="sr-only">, {item[Object.keys(item)[0]]}</span>
             </button>
           </td>
         )
@@ -94,7 +99,8 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
     const [checked, setChecked] = useState(false)
     const [indeterminate, setIndeterminate] = useState(false)
     const [selectedItems, setSelectedItems] = useState([])
-  
+    const action = useRef('Añadir')
+    const old = useRef({})
     useLayoutEffect(() => {
       const isIndeterminate = selectedItems.length > 0 && selectedItems.length < items.length
       setChecked(selectedItems.length === items.length)
@@ -125,13 +131,19 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
           data-testid="add-button"
             type="button"
             className="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={()=>setOpen(true)}
+            onClick={()=>{
+              
+              action.current='Añadir'
+              old.current={}
+              setOpen(true)
+            }}
           >
             Añadir
           </button>
         </div>
       </div>
-      <Slide open={open} setOpen={setOpen} fields={headers} keys={keys} onSubmit={onAdd}></Slide>
+      <Slide open={open} setOpen={setOpen} fields={headers} keys={keys}
+      onSubmit={action.current==='Añadir'?onAdd:onEdit} action={action.current} old={old} id={id}> </Slide>
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2  sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -164,7 +176,8 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
               <table className="min-w-full table-fixed divide-y divide-gray-300 overflow-x-auto">
                 <Headers titles={headers} 
                   checkbox={checkbox} checked={checked} toggleAll={toggleAll}/>
-                <Items items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems} id={id} edit={onEdit}/>
+                <Items items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems}
+                  id={id} action={action} old={old} setOpen={setOpen}/>
               </table>
             </div>
           </div>

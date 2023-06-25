@@ -4,25 +4,26 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils'
 import { useFormik} from "formik";
 import * as Yup from "yup";
-export default function Slide({open, setOpen, fields, keys, onSubmit}) {
+export default function Slide({open, setOpen, fields, keys, onSubmit, action, old, id}) {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize)
-
-  console.log(rem,'rem')
+  //console.log(old)
+  //console.log(rem,'rem')
   const formik = useFormik({
     initialValues: fields.reduce((o, field,index) => ({ ...o, [keys[index]]: ''}), {}) ,
     validationSchema: Yup.object(
       fields.reduce((o, field,index) => ({ ...o, [keys[index]]: Yup.string().required('No puede haber campos vacios')}), {}) 
     ),
     onSubmit:(values, {resetForm})=>{
+      console.log('dando', old.current)
+      onSubmit(values,old.current)
       resetForm()
-      onSubmit(values)
-      
+
     },
     
   })
   return (
     <Transition.Root show={open} as={Fragment}>
-      <Dialog as="span" className="relative  overflow-auto z-50" onClose={setOpen}>
+      <Dialog as="div" className="relative  overflow-auto z-50" onClose={setOpen}>
         <div className="fixed inset-0 overflow-auto">
           <div className="absolute inset-0 overflow-auto">
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
@@ -44,7 +45,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit}) {
                         <div className="px-4 sm:px-6">
                           <div className="flex items-start justify-between">
                             <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                              Añadir
+                              {action + (action==='Editar'?' '+old.current[id]: '')}
                             </Dialog.Title>
                             <div className="ml-3 flex h-7 items-center">
                               <button
@@ -65,7 +66,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit}) {
                                 <label htmlFor={keys[index]} className="block text-sm font-medium leading-6 text-gray-900">
                                   {field}
                                 </label>
-                                <div className="mt-1" key={field}>
+                                <div className="mt-1">
                                   <input
                                     type="text"
                                     name={keys[index]}
@@ -92,7 +93,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit}) {
                           type="submit"
                           className="ml-4 inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
                         >
-                          Agregar
+                          {action}
                         </button>
                       </div>
                     </form>

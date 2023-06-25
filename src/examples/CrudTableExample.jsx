@@ -56,6 +56,7 @@ const initialItems = [
 const headers=['Nombre', 'Código', 'Estado']
 const keys=['nombre', 'codigo', 'estado']
 const itemsReducer = (state, action) =>{
+  console.log('action', action)
     switch(action.type){
         case 'ADD':
           const found= state.some(item=> item.codigo===action.new.codigo)
@@ -64,7 +65,7 @@ const itemsReducer = (state, action) =>{
         case 'DELETE':
             return state.filter((item)=>!action.selected.some((deleted) =>item.codigo ===deleted.codigo ))
         case 'EDIT':
-            return state.map((item)=> item.codigo === action.new.codigo?action.new :item)
+            return state.map((item)=> item.codigo === action.old.codigo ?action.new : item)
         case 'EDIT_MULTIPLE':
             return state.map((item)=> action.selected.reduce((prev, current) => item.codigo === current.codigo ? current : prev ,item))
     }
@@ -93,15 +94,12 @@ const CrudTableExample = () =>{
                 selected:selected
             })
         }}
-        onEdit = {(item)=>{
-            const newItem = {
-                nombre : item.nombre + " edited ",
-                codigo: item.codigo,
-                estado: item.estado + " editedd "
-            }
+        onEdit = {(item,old)=>{
+          console.log('oldsito', old)
             dispatchItems({
                 type:'EDIT',
-                new: newItem,
+                old:old,
+                new: item,
             })
         }}
         />
