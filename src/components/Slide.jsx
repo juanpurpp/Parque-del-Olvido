@@ -1,10 +1,11 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon , plus} from '@heroicons/react/24/outline'
 import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils'
 import { useFormik} from "formik";
 import * as Yup from "yup";
-export default function Slide({open, setOpen, fields, keys, onSubmit, action, old, id}) {
+import { PencilIcon, PlusIcon } from '@heroicons/react/20/solid';
+export default function Slide({open, setOpen, fields, keys, onSubmit, action, old, id, setIndeterminate,setChecked,checkbox,setSelectedItems, selectedItems}) {
   const rem = parseFloat(getComputedStyle(document.documentElement).fontSize)
   //console.log(old)
   //console.log(rem,'rem')
@@ -14,9 +15,15 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
       fields.reduce((o, field,index) => ({ ...o, [keys[index]]: Yup.string().required('No puede haber campos vacios')}), {}) 
     ),
     onSubmit:(values, {resetForm})=>{
-      console.log('dando', old.current)
-      onSubmit(values,old.current)
+      console.log('dando', old)
+      onSubmit(values,old)
       resetForm()
+      if(action==='Editar'){
+        setIndeterminate(true)
+        setChecked(false)
+        checkbox.current.indeterminate=true
+        setSelectedItems(selectedItems.filter((p) => p !== old))
+      }
 
     },
     
@@ -44,8 +51,20 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto  py-6">
                         <div className="px-4 sm:px-6">
                           <div className="flex items-start justify-between">
-                            <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                              {action + (action==='Editar'?' '+old.current[id]: '')}
+                            <Dialog.Title className=" inline-flex text-base font-semibold leading-6 text-gray-900">
+
+                              { action==='Añadir'?
+                                  <>
+                                  <PlusIcon className="self-center mx-1 h-[1rem]"/>
+                                  {action}
+                                  </>
+                                  :
+                                  <>
+                                  <PencilIcon className="self-center mx-1 h-[1rem]"/>
+                                  {`${action} ${old[id]}`}
+                                  </>
+                              }
+                  
                             </Dialog.Title>
                             <div className="ml-3 flex h-7 items-center">
                               <button

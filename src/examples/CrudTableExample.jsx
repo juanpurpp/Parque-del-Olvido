@@ -75,7 +75,7 @@ const CrudTableExample = () =>{
     return <CrudTable title="Empresas" description="Empresas que funcionan con nosotros."
         items={items} headers={headers} keys={keys} id="codigo"
         onAdd={(added)=>{
-            console.log('added', added)
+            //console.log('added', added)
             dispatchItems({
               type:'ADD',
               new: added

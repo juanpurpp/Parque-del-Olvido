@@ -143,7 +143,8 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
         </div>
       </div>
       <Slide open={open} setOpen={setOpen} fields={headers} keys={keys}
-      onSubmit={action.current==='Añadir'?onAdd:onEdit} action={action.current} old={old} id={id}> </Slide>
+      onSubmit={action.current==='Añadir'?onAdd:onEdit} action={action.current} old={old.current} id={id}
+      setIndeterminate={setIndeterminate} setChecked={setChecked} checkbox={checkbox} setSelectedItems={setSelectedItems} selectedItems={selectedItems}> </Slide>
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2  sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
