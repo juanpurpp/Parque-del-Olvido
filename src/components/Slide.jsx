@@ -15,14 +15,17 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
       fields.reduce((o, field,index) => ({ ...o, [keys[index]]: Yup.string().required('No puede haber campos vacios')}), {}) 
     ),
     onSubmit:(values, {resetForm})=>{
-      console.log('dando', old)
+      //console.log('dando', old)
       onSubmit(values,old)
       resetForm()
+      
       if(action==='Editar'){
         setIndeterminate(true)
         setChecked(false)
         checkbox.current.indeterminate=true
         setSelectedItems(selectedItems.filter((p) => p !== old))
+        setOpen(false)
+        
       }
 
     },
@@ -46,7 +49,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                 
                 <Dialog.Panel className={`pointer-events-auto w-screen max-w-md  border-2 border-l-gray-200 relative )}`}>
                 
-                  <div className="flex  h-full flex-col divide-y divide-gray-200 bg-gray-100  shadow-xl">
+                  <div  className="flex  h-full flex-col divide-y divide-gray-200 bg-gray-100  shadow-xl">
                     <form onSubmit={formik.handleSubmit} >
                       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto  py-6">
                         <div className="px-4 sm:px-6">
@@ -98,6 +101,11 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                                 </div> 
                               </div> 
                           )}
+                        </div>
+                        <div className="flex p-2 items-center justify-center">
+                          {Object.keys(formik.errors).length 
+                          ? <p className='text-red-900'> No pueden haber campos vacios</p>
+                          : <></>} 
                         </div>
                       </div>
                       <div className="flex flex-shrink-0 justify-end px-4 py-4">
