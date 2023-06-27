@@ -1,6 +1,7 @@
 import {useReducer} from 'react'
 
 import { CrudTable } from '../components/CrudTable';
+import useCrud from '@/hooks/useCrud';
 const initialItems = [
     {
       nombre: 'Acme Corporation',
@@ -55,52 +56,22 @@ const initialItems = [
   ];
 const headers=['Nombre', 'Código', 'Estado']
 const keys=['nombre', 'codigo', 'estado']
-const itemsReducer = (state, action) =>{
-  console.log('action', action)
-    switch(action.type){
-        case 'ADD':
-          const found= state.some(item=> item.codigo===action.new.codigo)
-          if(found) alert('El elemento ya está en la lista'); 
-          return found ? state : state.concat(action.new)
-        case 'DELETE':
-            return state.filter((item)=>!action.selected.some((deleted) =>item.codigo ===deleted.codigo ))
-        case 'EDIT':
-            return state.map((item)=> item.codigo === action.old.codigo ?action.new : item)
-        case 'EDIT_MULTIPLE':
-            return state.map((item)=> action.selected.reduce((prev, current) => item.codigo === current.codigo ? current : prev ,item))
-    }
-}
+
 const CrudTableExample = () =>{
-    const [items, dispatchItems] = useReducer(itemsReducer, initialItems)
+    const [items, add,edit,deleteSelected, editSelected] = useCrud(initialItems, 'codigo');
     return <CrudTable title="Empresas" description="Empresas que funcionan con nosotros."
         items={items} headers={headers} keys={keys} id="codigo"
         onAdd={(added)=>{
-            //console.log('added', added)
-            dispatchItems({
-              type:'ADD',
-              new: added
-            })
+          add(added)
         }}
         onDeleteSelected ={(selected)=>{
-            dispatchItems({
-                type:'DELETE',
-                selected:selected
-            })
+          deleteSelected(selected)
         }}
-        onEditSelected = {(selected)=>{
-            selected.forEach((item,index) => item.nombre += index )
-            dispatchItems({
-                type:'EDIT_MULTIPLE',
-                selected:selected
-            })
+        onEditSelected = {(changes,oldValues)=>{
+          editSelected(changes, oldValues)
         }}
-        onEdit = {(item,old)=>{
-          console.log('oldsito', old)
-            dispatchItems({
-                type:'EDIT',
-                old:old,
-                new: item,
-            })
+        onEdit = {(updated,old)=>{
+          edit(updated,old)
         }}
         />
 }

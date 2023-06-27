@@ -1,6 +1,7 @@
-import { PencilIcon, TrashIcon } from '@heroicons/react/20/solid'
+import { PencilIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/20/solid'
 import { useRef, useState, useLayoutEffect} from 'react'
 import Slide from './Slide.jsx'
+import BulkEditSlide from './BulkEditSlide.jsx'
 const Headers = ({titles, checkbox, checked, toggleAll, action}) => {
 	const cols=titles.map( (title,index) =>
 		<th key={index} scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
@@ -33,19 +34,19 @@ const Headers = ({titles, checkbox, checked, toggleAll, action}) => {
 }
 const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) => {
     const rows = items.map(
-      (item, index) =>{ //item is one item that correspond to one row of the table
+      (item) =>{ //item is one item that correspond to one row of the table
         const row = Object.entries(item).map(
           (entries, index) => //entries are [key, value] of the current ite
             index===0  ? 
               <td key={entries[0]}
                 className={classNames(
-                  'whitespace-nowrap py-4 pr-3 text-sm font-medium',
+                  'whitespace-nowrap py-3 pr-3 text-sm font-medium',
                   selectedItems.includes(item) ? 'text-indigo-600' : 'text-gray-900'
                 )}
               >
               {entries[1]}
               </td> :
-              <td key={entries[0]} className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{entries[1]}</td>
+              <td key={entries[0]} className="whitespace-nowrap px-3 py-3 text-sm text-gray-500">{entries[1]}</td>
         )
         row.unshift(
           <td key="first" className="relative px-7 sm:w-12 sm:px-6">
@@ -55,6 +56,7 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
               
               <input
                 data-testid={"checkbox-"+item[id]}
+                id={"checkbox-"+item[id]}
                 type="checkbox"
                 className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                 value={item[id]}
@@ -70,18 +72,26 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
             </td>
         )
         row.push(
-          <td key="last" className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3">
-            <button onClick={()=>{
+          <td key="last" className="whitespace-nowrap py-2 pl-2 pr-2 text-right text-sm font-medium sm:pr-1 ">
+            <button 
+            onClick={()=>{
               action.current='Editar'
               old.current=item
               setOpen(true)
               
             }} 
-            className="link text-indigo-600 hover:text-indigo-900"> Editar<span className="sr-only">, {item[Object.keys(item)[0]]}</span>
+            className="link text-indigo-600 hover:text-indigo-900 hover:bg-blue-50 rounded-sm"
+            >
+              <div className="flex flex-row  ">
+                <PencilSquareIcon className="h-5 mx-1 aspect-square" />
+                <p>Editar</p>
+              </div>
+              <span className="sr-only">, {item[Object.keys(item)[0]]}</span>
             </button>
           </td>
         )
-        return <tr key={item[id]}>{row}</tr>;
+        return  <tr className="hover:bg-indigo-50 hover:ring-indigo-100 hover:ring-[1px]" key={item[id]}>{row}</tr>
+                
       }
     )
     return(
@@ -94,7 +104,8 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
     return classes.filter(Boolean).join(' ')
   }
 export const CrudTable = ({title, description, items, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) => {
-    const [open, setOpen] = useState(false)  
+    const [open, setOpen] = useState(false)
+    const [bulkEditOpen, setBulkEditOpen] = useState(false) 
     const checkbox = useRef()
     const [checked, setChecked] = useState(false)
     const [indeterminate, setIndeterminate] = useState(false)
@@ -144,7 +155,10 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
       </div>
       <Slide open={open} setOpen={setOpen} fields={headers} keys={keys}
       onSubmit={action.current==='Añadir'?onAdd:onEdit} action={action.current} old={old.current} id={id}
-      setIndeterminate={setIndeterminate} setChecked={setChecked} checkbox={checkbox} setSelectedItems={setSelectedItems} selectedItems={selectedItems}> </Slide>
+      setIndeterminate={setIndeterminate} setChecked={setChecked} checkbox={checkbox} setSelectedItems={setSelectedItems} selectedItems={selectedItems}/>
+      <BulkEditSlide open={bulkEditOpen} setOpen={setBulkEditOpen} fields={headers} keys={keys}
+      onSubmit={onEditSelected} old={selectedItems} id={id}
+      setIndeterminate={setIndeterminate} setChecked={setChecked} checkbox={checkbox} setSelectedItems={setSelectedItems} selectedItems={selectedItems} />
       <div className="mt-8 flow-root">
         <div className="-mx-4 -my-2  sm:-mx-6 lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -156,7 +170,7 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
                     type="button"
                     className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-indigo-700
                     shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
-                    onClick={()=>onEditSelected(selectedItems)}
+                    onClick={()=>setBulkEditOpen(true)}
                   >
                     <PencilIcon className="mr-1 w-[0.875rem] h-[0.875rem]"/>
                     Editar seleccionados
