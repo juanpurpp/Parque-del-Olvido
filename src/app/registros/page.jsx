@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from 'react'
 import  CrudTable  from '@/components/CrudTable'
 import { useQuery } from "react-query";
 import api from '@/services/api'
@@ -11,17 +10,8 @@ const keys=   ['name', 'age', 'gender', 'address', 'death_cause', 'civil_status'
 
 const {POST, GET, DELETE, PUT} = api('/api/registros')
 export default function page () {
-  const [items, setItems] = useState([])
   const GETquery= async ()=> (await GET()).data
   const {data, isLoading, refetch, } = useQuery("registros", GETquery);
-  const refresh = async (res)=>{
-    console.log('res', res)
-    setItems((await GET()).data)
-  }
-  const effect = async ()=>{
-    setItems((await GET()).data)
-  }
-  useEffect(()=>{effect()},[])
   if(isLoading) return <LoadingSpinner/>
   //const [items, add,edit,deleteSelected, editSelected] = useCrud(initialItems, 'name');
   return <CrudTable title="Difuntos" description="Difuntos que han pasado a un mejor lugar"

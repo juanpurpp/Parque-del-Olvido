@@ -39,19 +39,24 @@ const navigation = [
   { name: 'Principal', href: '/', icon: HomeIcon, current: false },
   { name: 'Usuarios', href: '/usuarios', icon: UsersIcon, current: false },
   { name: 'Registros', href: '/registros', icon: FolderIcon, current: false },
-
 ]
+const publics = ['/login', '/register']
 export default function RootLayout({ children }) {
-  const router = useRouter()
   return (
     
     <html className="h-full bg-white" lang="es-cl">
       <body className={` font-sans h-full`}>
-        <Layout>
-          <QueryClientProvider client={queryClient}>
-            {children}
-          </QueryClientProvider>
-        </Layout>
+        { 
+          publics.includes(usePathname())
+          ?
+            children
+          :
+          <Layout>
+            <QueryClientProvider client={queryClient}>
+              {children}
+            </QueryClientProvider>
+          </Layout>
+        }
       </body>
     </html>
   )
