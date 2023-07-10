@@ -4,6 +4,7 @@ import './globals.css'
 import { Fragment, useState } from 'react'
 import { useRouter , usePathname} from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
+import { QueryClient, QueryClientProvider } from 'react-query';
 import Image from 'next/image'
 //import Logo from '/logo.svg'
 import ico from '@/assets/Cruz-white.ico'
@@ -20,6 +21,7 @@ import {
 
 import { Inter, Roboto } from 'next/font/google'
 import Link from 'next/link';
+const queryClient = new QueryClient()
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -45,7 +47,11 @@ export default function RootLayout({ children }) {
     
     <html className="h-full bg-white" lang="es-cl">
       <body className={` font-sans h-full`}>
-        <Layout>{children}</Layout>
+        <Layout>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </Layout>
       </body>
     </html>
   )
@@ -226,8 +232,8 @@ function Layout({children}) {
           </a>
         </div>
 
-        <main className="py-10 lg:pl-72">
-          <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+        <main className="py-10 lg:pl-72 ">
+          <div className="px-4 sm:px-6 lg:px-8 overflow-x-auto overflow-y-hidden">{children}</div>
         </main>
       </div>
     </div>

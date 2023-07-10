@@ -2,22 +2,22 @@ import { PencilIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/20/sol
 import { useRef, useState, useLayoutEffect} from 'react'
 import Slide from './Slide.jsx'
 import BulkEditSlide from './BulkEditSlide.jsx'
-const Headers = ({titles, checkbox, checked, toggleAll, action}) => {
+const Headers = ({titles, items, checkbox, checked, toggleAll, action}) => {
 	const cols=titles.map( (title,index) =>
-		<th key={index} scope="col" className="min-w-[12rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
+		<th key={index} scope="col" className="min-w-[4rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
 			{title}
 		</th>
 	)
 	cols.unshift(
-		<th key="first" scope="col" className="relative px-7 sm:w-12 sm:px-6">
-			<input
-				type="checkbox"
-				className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-				ref={checkbox}
-				checked={checked}
-				onChange={toggleAll}
-			/>
-		</th>
+    <th key="first" scope="col" className="relative px-5 sm:w-12 sm:px-3">
+    <input
+      type="checkbox"
+      className="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+      ref={checkbox}
+      checked={checked}
+      onChange={toggleAll}
+    />
+  </th>
 	)
 	cols.push(
 		<th key="last" scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-3">
@@ -40,7 +40,7 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
             index===0  ? 
               <td key={entries[0]}
                 className={classNames(
-                  'whitespace-nowrap py-3 pr-3 text-sm font-medium',
+                  'whitespace-nowrap py-3 pr-2 text-sm font-medium',
                   selectedItems.includes(item) ? 'text-indigo-600' : 'text-gray-900'
                 )}
               >
@@ -103,7 +103,7 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
-export const CrudTable = ({title, description, items, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) => {
+export default function CrudTable ({title, description, items, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) {
     const [open, setOpen] = useState(false)
     const [bulkEditOpen, setBulkEditOpen] = useState(false) 
     const checkbox = useRef()
@@ -114,7 +114,7 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
     const old = useRef({})
     useLayoutEffect(() => {
       const isIndeterminate = selectedItems.length > 0 && selectedItems.length < items.length
-      setChecked(selectedItems.length === items.length)
+      setChecked(items.length === 0 ? false :selectedItems.length === items.length)
       setIndeterminate(isIndeterminate)
       checkbox.current.indeterminate = isIndeterminate
     }, [selectedItems])
@@ -180,7 +180,10 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-red-600
                        shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
-                      onClick={()=>onDeleteSelected(selectedItems)}
+                      onClick={()=>{
+                        setSelectedItems([])
+                        onDeleteSelected(selectedItems)
+                      }}
                   >
                       <TrashIcon className="mr-1 w-[0.875rem] h-[0.875rem]"/>
                       Borrar seleccionados
@@ -189,7 +192,7 @@ export const CrudTable = ({title, description, items, headers, keys=headers, id,
                 </div>
               )}
               <table className="min-w-full table-fixed divide-y divide-gray-300 overflow-x-auto">
-                <Headers titles={headers} 
+                <Headers titles={headers} items={items}
                   checkbox={checkbox} checked={checked} toggleAll={toggleAll}/>
                 <Items items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems}
                   id={id} action={action} old={old} setOpen={setOpen}/>

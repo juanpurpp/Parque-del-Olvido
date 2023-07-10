@@ -1,16 +1,139 @@
 import { Fragment, useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon , plus} from '@heroicons/react/24/outline'
-import { findRenderedDOMComponentWithClass } from 'react-dom/test-utils'
 import { useFormik} from "formik";
 import * as Yup from "yup";
 import { PencilIcon, PlusIcon } from '@heroicons/react/20/solid';
+import Datepicker from "react-tailwindcss-datepicker";
+const fieldInputs=(index, keys, formik, field)=>
+
+ ({
+    'rol':  
+      <select
+        name={keys[index]}
+        id={keys[index]}
+        onChange={formik.handleChange}
+        value={formik.values[keys[index]]}
+        className="mt-2 
+        block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      >
+        <option></option>
+        <option>Admin</option>
+        <option>Lector</option>
+      </select>,
+    'religion':  
+      <select
+        name={keys[index]}
+        id={keys[index]}
+        onChange={formik.handleChange}
+        value={formik.values[keys[index]]}
+        className="mt-2 
+        block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      >
+        <option></option>
+        <option>Católico</option>
+        <option>Evángelico</option>
+        <option>Judaismo</option>
+        <option>Islam</option>
+        <option>Hindú</option>
+        <option>Budista</option>
+        <option>Otro</option>
+      </select>,
+    'service':
+      <select
+        name={keys[index]}
+        id={keys[index]}
+        onChange={formik.handleChange}
+        value={formik.values[keys[index]]}
+        className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      >
+        <option></option>
+        <option>Completo</option>
+        <option>Parcial</option>
+      </select>,
+    'ceremony_type':
+    <select
+      name={keys[index]}
+      id={keys[index]}
+      onChange={formik.handleChange}
+      value={formik.values[keys[index]]}
+      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    >
+      <option></option>
+      <option>Funeral directo</option>
+      <option>Funeral con velorio</option>
+      <option>Cremación</option>
+      <option>Cremación hindú</option>
+      <option>བྱ་གཏོར་ (bya gtor o entierro celestial)</option>
+      <option>ososhiki (budismo japonés)</option>
+      <option>Otro</option>
+    </select>,
+    'ceremony_date': 
+    <Datepicker
+      i18n={"es"}
+      useRange={false} 
+      asSingle={true} 
+      name={keys[index]}
+      id={keys[index]}
+      onChange={(val)=>formik.handleChange({target:{id:keys[index], keys: keys[index], value:val.startDate.toString()}})}
+      value={{startDate:formik.values[keys[index]], endDate:formik.values[keys[index]]}}
+      inputClassName="w-full rounded-md focus:ring-0 font-normal bg-gray-100 text-gray-950"
+
+    />,
+    'civil_status':
+    <select
+      name={keys[index]}
+      id={keys[index]}
+      onChange={formik.handleChange}
+      value={formik.values[keys[index]]}
+      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    >
+      <option></option>
+      <option>Soltero</option>
+      <option>Casado</option>
+      <option>Viudo</option>
+    </select>,
+    'age':
+    <input
+      type="number"
+      name={keys[index]}
+      id={keys[index]}
+      onChange={formik.handleChange}
+      value={formik.values[keys[index]]}
+      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    />
+    ,
+    'gender':
+    <select
+      name={keys[index]}
+      id={keys[index]}
+      onChange={formik.handleChange}
+      value={formik.values[keys[index]]}
+      className="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6"
+    >
+      <option></option>
+      <option>Masculino</option>
+      <option>Femenino</option>
+      <option>Otro</option>
+      <option>Juan</option>
+    </select>,
+    'default':<input
+      type="text"
+      name={keys[index]}
+      id={keys[index]}
+      onChange={formik.handleChange}
+      value={formik.values[keys[index]]}
+      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+      placeholder={ 'Rellene para '+ field }
+  />
+  })
 export default function Slide({open, setOpen, fields, keys, onSubmit, action, old, id, setIndeterminate,setChecked,checkbox,setSelectedItems, selectedItems}) {
-  const rem = parseFloat(getComputedStyle(document.documentElement).fontSize)
+
   //console.log(old)
   //console.log(rem,'rem')
   const formik = useFormik({
-    initialValues: keys.reduce((o, key) => ({ ...o, [key]: ''}), {}) ,
+    enableReinitialize: true,
+    initialValues: keys.reduce((o, key) => ({ ...o, [key]: ''} ), {}) ,
     validationSchema: Yup.object(
       keys.reduce((o, key) => ({ ...o, [key]: Yup.string().required('No puede haber campos vacios')}), {}) 
     ),
@@ -49,9 +172,9 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                 
                 <Dialog.Panel className={`pointer-events-auto w-screen max-w-md  border-2 border-l-gray-200 relative )}`}>
                 
-                  <div  className="flex  h-full flex-col divide-y divide-gray-200 bg-gray-100  shadow-xl">
+                  <div  className="flex h-screen overflow-y-auto  flex-col divide-y divide-gray-200 bg-gray-100  shadow-xl">
                     <form onSubmit={formik.handleSubmit} >
-                      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto  py-6">
+                      <div className="flex min-h-0 flex-1 flex-col  py-6">
                         <div className="px-4 sm:px-6">
                           <div className="flex items-start justify-between">
                             <Dialog.Title className=" inline-flex text-base font-semibold leading-6 text-gray-900">
@@ -81,7 +204,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                             </div>
                           </div>
                         </div>
-                        <div className="relative flex flex-col mt-6 flex-1 px-4 sm:px-6  p-2">							
+                        <div className="relative flex flex-col mt-6 flex-1 px-4 sm:px-6  p-2d">							
                           {fields.map(
                             (field, index) => 
                               <div className='m-2' key={field}>
@@ -89,15 +212,7 @@ export default function Slide({open, setOpen, fields, keys, onSubmit, action, ol
                                   {field}
                                 </label>
                                 <div className="mt-1">
-                                  <input
-                                    type="text"
-                                    name={keys[index]}
-                                    id={keys[index]}
-                                    onChange={formik.handleChange}
-                                    value={formik.values[keys[index]]}
-                                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                                    placeholder={ 'Rellene para '+ field }
-                                  />
+                                  { fieldInputs(index, keys, formik, field)[keys[index]] ?? fieldInputs(index, keys, formik, field)['default']}
                                 </div> 
                               </div> 
                           )}

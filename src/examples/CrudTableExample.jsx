@@ -58,6 +58,7 @@ const headers=['Nombre', 'Código', 'Estado']
 const keys=['nombre', 'codigo', 'estado']
 
 const CrudTableExample = () =>{
+
     const [items, add,edit,deleteSelected, editSelected] = useCrud(initialItems, 'codigo');
     return <CrudTable title="Empresas" description="Empresas que funcionan con nosotros."
         items={items} headers={headers} keys={keys} id="codigo"

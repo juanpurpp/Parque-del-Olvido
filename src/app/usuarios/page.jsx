@@ -1,8 +1,7 @@
 "use client";
 
-import { CrudTable } from '@/components/CrudTable'
+import CrudTable from '@/components/CrudTable'
 import useCrud from '@/hooks/useCrud'
-import React from 'react'
 
 const initialItems = [
 	{email: 'primero@gmail.com', rol: 'Administrador'},
