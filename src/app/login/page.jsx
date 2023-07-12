@@ -1,9 +1,24 @@
 "use client";
 
-import React from 'react'
+import {useState} from 'react'
 import { useFormik } from 'formik';
 import * as Yup from 'yup'
+import { setCookie } from 'cookies-next';
+import api from '@/services/api'
+
+import {useRouter} from 'next/navigation'
+import { useMutation } from 'react-query';
+const {POST} = api('/api/authentication')
 export default function Page() {
+  const router = useRouter()
+  const [authError, setAuthError] = useState()
+  const { mutate} = useMutation(POST,{
+    onSuccess:(data)=>{
+      setCookie('token', data.data.token)
+      router.push('/')
+    },
+    onError:(err)=>setAuthError('La contraseña o el email no son correctos')
+  })
   const formik = useFormik({
     initialValues: {
       password:'',
@@ -16,7 +31,7 @@ export default function Page() {
       .required('Se necesita una contraseña.') 
       .min(4, 'Debe ser una contraseña de almenos 4 carácteres'),
     }),
-    onSubmit:(values, actions) => { console.log(values)}
+    onSubmit:(values, actions) => { mutate(values)}
   });
   return (
     <>
@@ -39,10 +54,11 @@ export default function Page() {
             Ingresar a la aplicación
           </h2>
         </div>
-
+        
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action="#" method="POST" onSubmit={formik.handleSubmit}>
             <div>
+              {authError?<p className="text-red-600 my-2">{authError}</p>:<></>}
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Correo eléctronico
               </label>
@@ -91,6 +107,7 @@ export default function Page() {
                 disabled={Object.keys(formik.errors).length > 0}
                 type="submit"
                 className="flex w-full disabled:bg-red-400 justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              
               >
                 Entrar
               </button>

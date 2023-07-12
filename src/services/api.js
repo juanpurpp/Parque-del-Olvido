@@ -1,10 +1,14 @@
 import axios from 'axios'
+import { getCookie } from 'cookies-next'
 const api = (route) =>{
+    
+    //axios.defaults.headers.common['token'] =getCookie('token') ?? 'no token'
+    const getToken=()=>getCookie('token') ?? 'no token'
     return{
-        POST: async (document, params) => await axios.post(route, {document},{params}),
-        PUT: async (target, document,params) => await axios.put(route, {target:target, document:document}, {params}),
-        GET: async (params) => await axios.get(route,{params}),
-        DELETE: async (params) => await axios.delete(route,{params}),
+        POST: async (body, params) => await axios.post(route, body,{params, headers:{token: getToken()}}),
+        PUT: async (body,params) => await axios.put(route, body, {params,headers:{token: getToken()}}),
+        GET: async (params) => await axios.get(route,{params, headers:{token: getToken()}}),
+        DELETE: async (params) => await axios.delete(route,{params, headers:{token: getToken()}}),
         
     }
 }

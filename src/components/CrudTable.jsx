@@ -103,7 +103,7 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
-export default function CrudTable ({title, description, items, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) {
+export default function CrudTable ({title, description, items, disableAdd=false, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) {
     const [open, setOpen] = useState(false)
     const [bulkEditOpen, setBulkEditOpen] = useState(false) 
     const checkbox = useRef()
@@ -138,19 +138,21 @@ export default function CrudTable ({title, description, items, headers, keys=hea
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
-          <button
-          data-testid="add-button"
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            onClick={()=>{
-              
-              action.current='Añadir'
-              old.current={}
-              setOpen(true)
-            }}
-          >
-            Añadir
-          </button>
+          {!disableAdd&&
+            <button
+            data-testid="add-button"
+              type="button"
+              className="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={()=>{
+                
+                action.current='Añadir'
+                old.current={}
+                setOpen(true)
+              }}
+            >
+              Añadir
+            </button>
+          }
         </div>
       </div>
       <Slide open={open} setOpen={setOpen} fields={headers} keys={keys}

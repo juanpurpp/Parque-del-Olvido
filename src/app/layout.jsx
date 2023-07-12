@@ -2,11 +2,11 @@
 import './globals.css'
 
 import { Fragment, useState } from 'react'
-import { useRouter , usePathname} from 'next/navigation'
+import { useRouter , usePathname, } from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Image from 'next/image'
-//import Logo from '/logo.svg'
+//import Logo from '/Logo.svg'
 import ico from '@/assets/Cruz-white.ico'
 import {
   Bars3Icon,
@@ -46,17 +46,19 @@ export default function RootLayout({ children }) {
     
     <html className="h-full bg-white" lang="es-cl">
       <body className={` font-sans h-full`}>
-        { 
-          publics.includes(usePathname())
-          ?
-            children
-          :
-          <Layout>
-            <QueryClientProvider client={queryClient}>
-              {children}
-            </QueryClientProvider>
-          </Layout>
-        }
+        <QueryClientProvider client={queryClient}>
+          { 
+            publics.includes(usePathname())
+            ?
+              children
+            :
+            <Layout>
+              
+                {children}
+              
+            </Layout>
+          }
+        </QueryClientProvider>
       </body>
     </html>
   )
@@ -71,7 +73,7 @@ function Logo(){
     <div>
       <Link id="logo" name="logo" href="/">
         <img
-          src="/logo.svg"
+          src="/Logo.svg"
           className='mt-4 self-center h-16 w-16'
           alt="Parque del Olvido"
         />
@@ -226,7 +228,7 @@ function Layout({children}) {
             <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
-          <div className="flex-1 text-sm font-semibold leading-6 text-white">Dashboard</div>
+          <div className="flex-1 text-sm font-semibold leading-6 text-white">{navigation.find(i=>i.href===usePathname()).name}</div>
           <a href="#">
             <span className="sr-only">Your profile</span>
             <img

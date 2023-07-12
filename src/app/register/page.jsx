@@ -2,8 +2,22 @@
 import {useState} from  'react'
 import {Formik} from 'formik'
 import * as Yup from 'yup';
+import {useSearchParams, useRouter} from 'next/navigation'
+import api from '@/services/api'
+import {useMutation} from 'react-query'
+const {POST} = api('/api/usuarios')
 const page = () => {
-
+	const router = useRouter()
+	const token = useSearchParams().get('token')
+	const email = useSearchParams().get('email')
+	const {mutate} =useMutation(async (values)=> await POST(values, {token:token}),
+		{
+			onSuccess:(data)=>{
+				router.push('/login')
+			},
+			onError:(err)=>console.log(err)
+		}
+	)
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -19,18 +33,18 @@ const page = () => {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
 					<Formik
-						initialValues={{ password:'', email:'correo@gmail.com'}}
+						initialValues={{ password:'', email:email}}
 						validationSchema={Yup.object().shape({
 							password: Yup.string()
 							.required('Se necesita una contraseña.') 
 							.min(4, 'Debe ser una contraseña de almenos 4 carácteres'),
 						})}
-						onSubmit={(values, actions) => { console.log(values)
-						}}
+						onSubmit={(values, actions) => { mutate(values)}}
 					>
 					{props =>(
 						<form className="space-y-6" action="#" method="POST" onSubmit={props.handleSubmit}>
 							<div>
+
 								<label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
 									Correo electrónico
 								</label>
@@ -41,7 +55,7 @@ const page = () => {
 										type="email"
 										autoComplete="email"
 										disabled
-										placeholder='correo@gmail.com'
+										placeholder={email}
 										className="block w-full rounded-md border-0 py-1.5 disabled:bg-slate-300 placehoder:text-sky-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 "
 									>
 									</input>

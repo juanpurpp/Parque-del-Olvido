@@ -77,7 +77,7 @@ const fieldInputs=(index, keys, formik, field)=>
       id={keys[index]}
       onChange={(val)=>formik.handleChange({target:{id:keys[index], keys: keys[index], value:val.startDate.toString()}})}
       value={{startDate:formik.values[keys[index]], endDate:formik.values[keys[index]]}}
-      inputClassName="w-full rounded-md focus:ring-0 font-normal bg-gray-100 text-gray-950"
+      inputClassName="w-full rounded-md border-gray-300 focus:ring-0 font-normal bg-gray-50 text-gray-950"
 
     />,
     'civil_status':
