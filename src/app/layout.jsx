@@ -1,10 +1,12 @@
 "use client";
 import './globals.css'
 
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useRouter , usePathname, } from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider, useMutation, useQuery } from 'react-query';
+import { getCookie, setCookie } from 'cookies-next';
+import api from '@/services/api'
 import Image from 'next/image'
 //import Logo from '/Logo.svg'
 import ico from '@/assets/Cruz-white.ico'
@@ -36,12 +38,24 @@ export const metadata = {
   description: 'Control de registros',
 }
 const navigation = [
-  { name: 'Principal', href: '/', icon: HomeIcon, current: false },
-  { name: 'Usuarios', href: '/usuarios', icon: UsersIcon, current: false },
-  { name: 'Registros', href: '/registros', icon: FolderIcon, current: false },
+  { name: 'Principal', href: '/', icon: HomeIcon, current: false , admin:false},
+  { name: 'Usuarios', href: '/usuarios', icon: UsersIcon, current: false, admin:true },
+  { name: 'Registros', href: '/registros', icon: FolderIcon, current: false, admin:false },
 ]
 const publics = ['/login', '/register']
+
+const {POST} = api('/api/authentication/renovate')
 export default function RootLayout({ children }) {
+  const rol = getCookie('rol') ?? 'no rol'
+  const token = getCookie('token') ?? 'no token'
+  useEffect(() => {
+    if(rol !== 'Administrador') navigation.splice(1, 1);
+    POST({token: token}).then(res=> {
+      setCookie('token', res.data.token)
+      setCookie('rol', res.data.rol)
+    }) 
+  }, [rol]);
+  
   return (
     
     <html className="h-full bg-white" lang="es-cl">

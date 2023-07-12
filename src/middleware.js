@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server'
 import * as jwt from 'jose'
 import { cookies } from 'next/headers'
+
+
+
 const publics = ['/register', '/login']
+
+const alg = 'HS256'
+
 const apiHandler = async (req)=>{
     const token = await req.headers.get("token")
+    let decodedToken = undefined
     const secret = new TextEncoder().encode(
         process.env.APP_SECRET,
       )
-
-    let decodedToken = undefined
     try{ const {payload} = token ? await jwt.jwtVerify(token,secret ,{
         iss: 'urn:example:issuer',
         aud: 'urn:example:audience',
@@ -44,18 +49,19 @@ const apiHandler = async (req)=>{
 }
 const frontHandler = async (req) =>{
     const cookie = await req.cookies.get('token')
-    const token = cookie ?cookie.value : 'no token'
+    let token = cookie ?cookie.value : 'no token'
     console.log(token)
     const secret = new TextEncoder().encode(
-        process.env.APP_SECRET,
-      )
-
-    let decodedToken = undefined
-    try{ const {payload} = token ? await jwt.jwtVerify(token,secret ,{
+			process.env.APP_SECRET,
+		)
+		let decodedToken = undefined
+    try{ 
+    	const {payload} = token ? await jwt.jwtVerify(token,secret ,{
         iss: 'urn:example:issuer',
         aud: 'urn:example:audience',
       }) : {}
       decodedToken = payload
+
     }
     catch(e){ 
         console.error(e)
@@ -72,6 +78,9 @@ const frontHandler = async (req) =>{
         case '/login':
             if( decodedToken !== 'INVALID') return NextResponse.redirect(new URL('/', req.url))
             return NextResponse.next()
+        case '/usuarios':
+            if( decodedToken && decodedToken.rol==='Administrador') return NextResponse.next()
+            return  NextResponse.redirect(new URL('/', req.url))
         default: 
             if(!decodedToken || decodedToken === 'INVALID') return NextResponse.redirect(new URL('/login', req.url))
             return NextResponse.next()

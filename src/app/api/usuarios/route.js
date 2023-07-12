@@ -5,8 +5,9 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 const {get, add, update, remove} = await db('usuarios')
 export async function GET(req) {
+  const email = req.nextUrl.searchParams.get('email')
   try {
-    return res.json(await get({},['hash']),{status:200})
+    return res.json(await get(email?{email:email}:{},['hash']),{status:200})
     }
   catch (err) {
     console.error(err)

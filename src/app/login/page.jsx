@@ -9,12 +9,14 @@ import api from '@/services/api'
 import {useRouter} from 'next/navigation'
 import { useMutation } from 'react-query';
 const {POST} = api('/api/authentication')
+const rol = api('/api/authentication/rol')
 export default function Page() {
   const router = useRouter()
   const [authError, setAuthError] = useState()
   const { mutate} = useMutation(POST,{
-    onSuccess:(data)=>{
+    onSuccess:async (data)=>{
       setCookie('token', data.data.token)
+      rol.POST({token: data.data.token}).then(res=>setCookie('rol', res.data.rol))
       router.push('/')
     },
     onError:(err)=>setAuthError('La contraseña o el email no son correctos')
