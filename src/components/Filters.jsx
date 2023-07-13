@@ -203,6 +203,28 @@ const Filters = ({titles, fields,setFilters}) => {
 					>
 						Limpiar filtros
 					<TrashIcon className="-ml-0.5 h-4 w-4" aria-hidden="true" />
+					<TrashIcon className=" h-4 w-4 mx-1" aria-hidden="true" />
+				</button>
+				<button
+					type="button"
+					className="inline-flex justify-self-end items-center ml-2 border-2 border-green-300 rounded-md my-1 bg-green-100 px-2 py-1 text-xs font-semibold text-green-900 shadow-sm hover:bg-green-300"
+					onClick={()=>axios.post('/api/registros/asExcel',filters, {responseType: 'blob'}).then((response) => {
+								// create file link in browser's memory
+								const href = URL.createObjectURL(response.data);
+						
+								// create "a" HTML element with href to file & click
+								const link = document.createElement('a');
+								link.href = href;
+								link.setAttribute('download', 'Registros.xlsx'); //or any other extension
+								document.body.appendChild(link);
+								link.click();					
+								// clean up "a" element & remove ObjectURL
+								document.body.removeChild(link);
+								URL.revokeObjectURL(href);
+						})}
+					>
+						Descargar excel
+					<ArrowDownTrayIcon className=" h-4 w-4 mx-1" aria-hidden="true" />
 				</button>
 				<div className="relative flex flex-col w-1/3">
 					{
