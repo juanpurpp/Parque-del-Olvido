@@ -1,7 +1,8 @@
 import React from 'react'
 import Datepicker from 'react-tailwindcss-datepicker'
 import { useFormik } from 'formik'
-import { TrashIcon } from '@heroicons/react/20/solid'
+import { ArrowDownTrayIcon, FunnelIcon, TrashIcon } from '@heroicons/react/20/solid'
+import axios from 'axios'
 const input = (field, titles, index, formik) =>({
 	'rol':  
 		<select
@@ -177,7 +178,7 @@ const input = (field, titles, index, formik) =>({
 		/>
 	</>
 })
-const Filters = ({titles, fields,setFilters}) => {
+const Filters = ({titles, fields,setFilters,filters}) => {
 	const formik = useFormik({
 		initialValues: fields.reduce((o, key) => ({ ...o, [key]: ''} ), {}) ,
 		onSubmit: (values)=> {
@@ -193,16 +194,39 @@ const Filters = ({titles, fields,setFilters}) => {
 			<h2 className="my-4 text-indigo-950 text-lg text-bold">Filtros</h2>
 			<form onSubmit={formik.handleSubmit}>
 				<button type="submit" className="inline-flex justify-self-end items-center border-2 border-indigo-200 rounded-md my-2 bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-600 shadow-sm hover:bg-indigo-100"
-					>Filtrar</button>
+					>Filtrar
+					<FunnelIcon className=" h-4 w-4 mx-1" aria-hidden="true" />	
+				</button>
 				<button
 					type="button"
 					className="inline-flex justify-self-end items-center ml-2 border-2 border-red-200 rounded-md my-1 bg-red-50 px-2 py-1 text-xs font-semibold text-red-900 shadow-sm hover:bg-red-100"
 					onClick={()=>{setFilters({})
-					formik.resetForm()
+						formik.resetForm()
 					}}
 					>
 						Limpiar filtros
-					<TrashIcon className="-ml-0.5 h-4 w-4" aria-hidden="true" />
+					<TrashIcon className=" h-4 w-4 mx-1" aria-hidden="true" />
+				</button>
+				<button
+					type="button"
+					className="inline-flex justify-self-end items-center ml-2 border-2 border-green-500 rounded-md my-1 bg-green-150 px-2 py-1 text-xs font-semibold text-green-900 shadow-sm hover:bg-green-300"
+					onClick={()=>axios.post('/api/registros/asExcel',filters, {responseType: 'blob'}).then((response) => {
+								// create file link in browser's memory
+								const href = URL.createObjectURL(response.data);
+						
+								// create "a" HTML element with href to file & click
+								const link = document.createElement('a');
+								link.href = href;
+								link.setAttribute('download', 'Registros.xlsx'); //or any other extension
+								document.body.appendChild(link);
+								link.click();					
+								// clean up "a" element & remove ObjectURL
+								document.body.removeChild(link);
+								URL.revokeObjectURL(href);
+						})}
+					>
+						Descargar excel
+					<ArrowDownTrayIcon className=" h-4 w-4 mx-1" aria-hidden="true" />
 				</button>
 				<div className="relative flex flex-col w-1/3">
 					{

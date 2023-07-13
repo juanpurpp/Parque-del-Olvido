@@ -39,7 +39,7 @@ export default function page () {
         update.mutate({target:old, document:updated})
       }}
       />
-      <Filters titles={headers} fields={keys} setFilters={setFilters}></Filters>
+      <Filters titles={headers} fields={keys} setFilters={setFilters} filters={filters}></Filters>
     </>
    ) 
 }
