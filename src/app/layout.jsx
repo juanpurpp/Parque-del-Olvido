@@ -33,10 +33,7 @@ const roboto = Roboto({
   subsets: ['latin'],
   variable: '--font-roboto',
 })
-export const metadata = {
-  title: 'Parque del Olvido',
-  description: 'Control de registros',
-}
+
 const navigation = [
   { name: 'Principal', href: '/', icon: HomeIcon, current: false , admin:false},
   { name: 'Usuarios', href: '/usuarios', icon: UsersIcon, current: false, admin:true },
