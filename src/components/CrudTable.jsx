@@ -2,7 +2,7 @@ import { PencilIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/20/sol
 import { useRef, useState, useLayoutEffect} from 'react'
 import Slide from './Slide.jsx'
 import BulkEditSlide from './BulkEditSlide.jsx'
-const Headers = ({titles, items, checkbox, checked, toggleAll, action}) => {
+const Headers = ({titles, items, checkbox, checked, toggleAll, action, lector}) => {
 	const cols=titles.map( (title,index) =>
 		<th key={index} scope="col" className="min-w-[4rem] py-3.5 pr-3 text-left text-sm font-semibold text-gray-900">
 			{title}
@@ -32,7 +32,7 @@ const Headers = ({titles, items, checkbox, checked, toggleAll, action}) => {
     </thead>
   )
 }
-const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) => {
+const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen, lector}) => {
     const rows = items.map(
       (item) =>{ //item is one item that correspond to one row of the table
         const row = Object.entries(item).map(
@@ -72,15 +72,15 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
             </td>
         )
         row.push(
-          <td key="last" className="whitespace-nowrap py-2 pl-2 pr-2 text-right text-sm font-medium sm:pr-1 ">
-            <button 
+          <td key="last" className="whitespace-nowrap py-2 pl-2 pr-2 text-right text-sm font-medium sm:pr-1 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white">
+            <button disabled={lector} 
             onClick={()=>{
               action.current='Editar'
               old.current=item
               setOpen(true)
               
             }} 
-            className="link text-indigo-600 hover:text-indigo-900 hover:bg-blue-50 rounded-sm"
+            className="link text-indigo-600 hover:text-indigo-900 hover:bg-blue-50 rounded-sm disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
             >
               <div className="flex flex-row  ">
                 <PencilSquareIcon className="h-5 mx-1 aspect-square" />
@@ -104,7 +104,7 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
   }
-export default function CrudTable ({title, description, items, disableAdd=false, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected}) {
+export default function CrudTable ({title, description, items, disableAdd=false, headers, keys=headers, id, onAdd, onEdit, onEditSelected, onDeleteSelected, lector}) {
     const [open, setOpen] = useState(false)
     const [bulkEditOpen, setBulkEditOpen] = useState(false) 
     const checkbox = useRef()
@@ -142,8 +142,9 @@ export default function CrudTable ({title, description, items, disableAdd=false,
           {!disableAdd&&
             <button
             data-testid="add-button"
-              type="button"
-              className="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              type="button" disabled={lector} 
+              className="block rounded-md bg-indigo-600 px-3 py-1.5 text-center disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white
+              text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               onClick={()=>{
                 
                 action.current='Añadir'
@@ -169,7 +170,7 @@ export default function CrudTable ({title, description, items, disableAdd=false,
               {selectedItems.length > 0 && (
                 <div className="absolute left-14 top-0 flex h-12 items-center space-x-1 bg-white sm:left-12">
                   <button
-                    data-testid="edit-button"
+                    data-testid="edit-button" disabled={lector} 
                     type="button"
                     className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-indigo-700
                     shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
@@ -179,7 +180,7 @@ export default function CrudTable ({title, description, items, disableAdd=false,
                     Editar seleccionados
                   </button>
                   <button
-                      data-testid="delete-button"
+                      data-testid="delete-button" disabled={lector} 
                       type="button"
                       className="inline-flex items-center rounded bg-white px-2 py-1 text-sm font-semibold text-red-600
                        shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
@@ -195,9 +196,9 @@ export default function CrudTable ({title, description, items, disableAdd=false,
                 </div>
               )}
               <table className="min-w-full table-fixed divide-y divide-gray-300 my-4 bg-gray-50 border-2 rounded-md border-gray-100 overflow-x-auto">
-                <Headers titles={headers} items={items}
+                <Headers lector={lector}titles={headers} items={items}
                   checkbox={checkbox} checked={checked} toggleAll={toggleAll}/>
-                <Items items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems}
+                <Items lector={lector} items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems}
                   id={id} action={action} old={old} setOpen={setOpen}/>
               </table>
               {items.length === 0

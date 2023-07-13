@@ -3,6 +3,7 @@ import Datepicker from 'react-tailwindcss-datepicker'
 import { useFormik } from 'formik'
 import { ArrowDownTrayIcon, FunnelIcon, TrashIcon } from '@heroicons/react/20/solid'
 import axios from 'axios'
+import { getCookie } from 'cookies-next'
 const input = (field, titles, index, formik) =>({
 	'rol':  
 		<select
@@ -178,7 +179,7 @@ const input = (field, titles, index, formik) =>({
 		/>
 	</>
 })
-const Filters = ({titles, fields,setFilters,filters}) => {
+const Filters = ({titles, fields,setFilters,filters,}) => {
 	const formik = useFormik({
 		initialValues: fields.reduce((o, key) => ({ ...o, [key]: ''} ), {}) ,
 		onSubmit: (values)=> {
@@ -210,7 +211,7 @@ const Filters = ({titles, fields,setFilters,filters}) => {
 				<button
 					type="button"
 					className="inline-flex justify-self-end items-center ml-2 border-2 border-green-500 rounded-md my-1 bg-green-150 px-2 py-1 text-xs font-semibold text-green-900 shadow-sm hover:bg-green-300"
-					onClick={()=>axios.post('/api/registros/asExcel',filters, {responseType: 'blob'}).then((response) => {
+					onClick={async ()=>axios.post('/api/registros/asExcel',filters, {responseType: 'blob', headers:{token:await getCookie('token')}}).then((response) => {
 								// create file link in browser's memory
 								const href = URL.createObjectURL(response.data);
 						

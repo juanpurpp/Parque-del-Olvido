@@ -22,7 +22,9 @@ const apiHandler = async (req)=>{
     }
     catch(e){ 
         console.error(e)
-        decodedToken = 'INVALID'
+        decodedToken = {
+            rol:'INVALID'
+        }
     }
 
     const next = NextResponse.next({
@@ -33,6 +35,39 @@ const apiHandler = async (req)=>{
     },{status:401})
     console.log('decoded',decodedToken )
 
+    switch(req.nextUrl.pathname){
+        case '/api/usuarios':
+        case '/api/invite':
+            switch(decodedToken.rol){
+                case 'Administrador': return next
+                default: return nonAuthorized
+            }
+        case '/api/registros/asExcel':
+        case '/api/registros/byFilter':
+            switch(decodedToken.rol){
+                case 'Administrador':
+                case 'Lector':return next
+                default: return nonAuthorized
+            }
+        case '/api/registros':{
+            switch(decodedToken.rol){
+                case 'Administrador':
+                    switch(req.method){
+                        case 'POST':
+                        case 'PUT':
+                        case 'DELETE':return next
+                    }
+                case 'Lector':{
+                    switch(req.method){
+                        case 'GET': return next
+                    }
+                }
+                default: return nonAuthorized
+            }
+        }
+        default: return next
+    }
+    
     switch(req.method){
         case 'GET':
             switch( req.nextUrl.pathname ){
