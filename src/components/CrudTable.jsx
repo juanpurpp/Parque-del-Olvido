@@ -94,8 +94,9 @@ const Items = ({items, id, selectedItems, setSelectedItems,old,action,setOpen}) 
                 
       }
     )
+    
     return(
-        <tbody>
+        <tbody className='overflow-x-auto'>
             {rows}
         </tbody> 
     )
@@ -162,8 +163,8 @@ export default function CrudTable ({title, description, items, disableAdd=false,
       onSubmit={onEditSelected} old={selectedItems} id={id}
       setIndeterminate={setIndeterminate} setChecked={setChecked} checkbox={checkbox} setSelectedItems={setSelectedItems} selectedItems={selectedItems} />
       <div className="mt-8 flow-root">
-        <div className="-mx-4 -my-2  sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+        <div className="-mx-3 -my-2  sm:-mx-5 lg:-mx-7">
+          <div className="inline-block min-w-full py-2 align-middle sm:px-3 lg:px-5">
             <div className="relative">
               {selectedItems.length > 0 && (
                 <div className="absolute left-14 top-0 flex h-12 items-center space-x-1 bg-white sm:left-12">
@@ -193,12 +194,19 @@ export default function CrudTable ({title, description, items, disableAdd=false,
 
                 </div>
               )}
-              <table className="min-w-full table-fixed divide-y divide-gray-300 overflow-x-auto">
+              <table className="min-w-full table-fixed divide-y divide-gray-300 my-4 bg-gray-50 border-2 rounded-md border-gray-100 overflow-x-auto">
                 <Headers titles={headers} items={items}
                   checkbox={checkbox} checked={checked} toggleAll={toggleAll}/>
                 <Items items={items} selectedItems={selectedItems} setSelectedItems={setSelectedItems}
                   id={id} action={action} old={old} setOpen={setOpen}/>
               </table>
+              {items.length === 0
+                ? <div className=' flex border-2 justify-center items-center m-2'>
+                    <p className="place-self-center my-6 text-center text-indigo-950">No hay nada para mostrar
+                    </p>
+                  </div>
+                : <></>
+              }
             </div>
           </div>
         </div>

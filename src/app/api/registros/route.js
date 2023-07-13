@@ -1,9 +1,11 @@
 
 import db from '@/services/mongo'
 import { NextResponse as res } from 'next/server'
+
 const {get, add, update, remove} = await db('registros')
 export async function GET(req) {
   try {
+    console.log('quechucha')
     return res.json(await get(),{status:200})
     }
   catch (err) {

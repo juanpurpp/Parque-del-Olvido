@@ -32,10 +32,11 @@ const apiHandler = async (req)=>{
         message: "No authorized",
     },{status:401})
     console.log('decoded',decodedToken )
+
     switch(req.method){
         case 'GET':
             switch( req.nextUrl.pathname ){
-                default:return next
+                default:return  next
             }
         case 'POST':
             switch( req.nextUrl.pathname ){
