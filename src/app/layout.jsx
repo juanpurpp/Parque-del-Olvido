@@ -2,10 +2,10 @@
 import './globals.css'
 
 import { Fragment, useEffect, useState } from 'react'
-import { useRouter , usePathname, } from 'next/navigation'
+import { useRouter , usePathname, redirect} from 'next/navigation'
 import { Dialog, Transition } from '@headlessui/react'
 import { QueryClient, QueryClientProvider, useMutation, useQuery } from 'react-query';
-import { getCookie, setCookie } from 'cookies-next';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import api from '@/services/api'
 import Image from 'next/image'
 //import Logo from '/Logo.svg'
@@ -94,6 +94,7 @@ function Logo(){
 }
 function Layout({children}) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const email = getCookie('email') ?? 'no email'
   //console.log('path', usePathname())
   return (
     <div >
@@ -216,6 +217,7 @@ function Layout({children}) {
                   </ul>
                 </li>
                 <li className="-mx-6 mt-auto">
+                  <Menu></Menu>
                   <a
                     href="#"
                     className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
@@ -226,7 +228,7 @@ function Layout({children}) {
                       alt=""
                     />
                     <span className="sr-only">Perfil</span>
-                    <span aria-hidden="true">Raúl Arredondo</span>
+                    <span aria-hidden="true">{email}</span>
                   </a>
                 </li>
               </ul>
@@ -255,5 +257,45 @@ function Layout({children}) {
         </main>
       </div>
     </div>
+  )
+}
+import { Popover } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/20/solid'
+
+const solutions = [
+  { name: 'Salir de la cuenta', href: '#', onClick:()=>{
+    deleteCookie('token')
+    redirect('/login')
+    
+  }},
+]
+function Menu() {
+  return (
+    <Popover className="relative -top-4 ml-2">
+      <Popover.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-3 text-gray-50">
+        <span>Opciones</span>
+        <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+      </Popover.Button>
+
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-200"
+        enterFrom="opacity-0 translate-y-1"
+        enterTo="opacity-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="opacity-100 translate-y-0"
+        leaveTo="opacity-0 translate-y-1"
+      >
+        <Popover.Panel className="absolute left-1/2 z-10 mt-3 flex w-screen max-w-min -translate-x-1/2 px-4">
+          <div className="w-56 shrink rounded-xl bg-white p-4 text-sm font-semibold leading-6 text-gray-900 shadow-lg ring-1 ring-gray-900/5">
+            {solutions.map((item) => (
+              <button key={item.name}  onClick={item.onClick} className="block  hover:text-indigo-600">
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </Popover.Panel>
+      </Transition>
+    </Popover>
   )
 }
